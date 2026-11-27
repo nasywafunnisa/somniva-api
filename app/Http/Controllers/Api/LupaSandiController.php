@@ -50,6 +50,31 @@ class LupaSandiController extends Controller
         return response()->json($respons);
     }
 
+        public function cekKode(Request $request)
+    {
+        $data = $request->validate([
+            'email' => ['required', 'email'],
+            'kode' => ['required', 'digits:6'],
+        ]);
+
+        $salah = ValidationException::withMessages([
+            'kode' => ['Kode salah atau sudah kedaluwarsa.'],
+        ]);
+
+        $baris = DB::table('reset_sandi')->where('email', $data['email'])->first();
+
+        if (! $baris || now()->greaterThan($baris->kadaluarsa_pada) || $baris->percobaan >= 5) {
+            throw $salah;
+        }
+
+        if (! Hash::check($data['kode'], $baris->kode_hash)) {
+            DB::table('reset_sandi')->where('email', $data['email'])->increment('percobaan');
+            throw $salah;
+        }
+
+        return response()->json(['pesan' => 'Kode benar.']);
+    }
+
     public function reset(Request $request)
     {
         $data = $request->validate([

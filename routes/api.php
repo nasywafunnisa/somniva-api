@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\LupaSandiController;
 Route::post('/register', [AuthController::class, 'daftar']);
 Route::post('/login', [AuthController::class, 'masuk']);
 Route::post('/lupa-sandi', [LupaSandiController::class, 'kirimKode'])->middleware('throttle:5,1');
+Route::post('/cek-kode', [LupaSandiController::class, 'cekKode'])->middleware('throttle:10,1');
 Route::post('/reset-sandi', [LupaSandiController::class, 'reset'])->middleware('throttle:10,1');
 
 // Perlu token Sanctum
